@@ -1,0 +1,61 @@
+/* Sidebar */
+#sidebar {
+  height: 100vh;
+  width: 250px;
+  position: fixed;
+  top: 0;
+  left: -250px; /* Sidebar comienza fuera de la pantalla */
+  background-color: #343a40;
+  color: white;
+  padding-top: 20px;
+  transition: left 0.3s ease;
+}
+
+#sidebar.show {
+  left: 0; /* Cuando se activa, se mueve a la vista */
+}
+
+#sidebar a {
+  color: white;
+  padding: 10px 15px;
+  display: block;
+  text-decoration: none;
+}
+
+#sidebar a:hover {
+  background-color: #575757;
+}
+
+/* Estilo para la flecha */
+#sidebar #sidebarToggle {
+  position: absolute;
+  top: 20px; /* Cambié bottom por top para posicionarlo al inicio */
+  right: -40px; /* Deja que se quede dentro de la sidebar cuando se despliega */
+  transform: translateX(20px); /* Ajusta la transformación para que la flecha quede en el borde */
+}
+
+#sidebar #toggleBtn {
+  background: none;
+  border: none;
+  font-size: 50px; /* Tamaño de la flecha ajustado */
+  cursor: pointer;
+  color: rgb(177, 0, 0);
+}
+
+#sidebar #arrow {
+  transition: transform 0.3s ease;
+}
+
+#sidebar.show #arrow {
+  transform: rotate(180deg); /* Rota la flecha cuando la sidebar está visible */
+}
+
+/* Content con margen para la sidebar */
+#content {
+  transition: margin-left 0.3s ease;
+  margin-left: 0;
+}
+
+#content.sidebar-active {
+  margin-left: 250px; /* Desplaza el contenido hacia la derecha */
+}
