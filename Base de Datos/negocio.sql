@@ -159,11 +159,9 @@ DROP TABLE IF EXISTS `metodos_pago`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `metodos_pago` (
-  `id_metodo_pago` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre_metodo_pago` varchar(50) NOT NULL,
-  `venta_id` int(11) NOT NULL,
-  PRIMARY KEY (`id_metodo_pago`),
-  KEY `metodosPago_ventaPos` (`venta_id`)
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(150) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -174,14 +172,14 @@ CREATE TABLE `metodos_pago` (
 LOCK TABLES `metodos_pago` WRITE;
 /*!40000 ALTER TABLE `metodos_pago` DISABLE KEYS */;
 INSERT INTO `metodos_pago` VALUES
-(1,'Davivienda',1),
-(2,'Bancolombia',2),
-(3,'Nequi',3),
-(4,'Mercado Pago',4),
-(5,'Payvalida',5),
-(6,'Ahorro a la mano',6),
-(7,'Paypal',7),
-(8,'addi',8);
+(1,'Davivienda'),
+(2,'Bancolombia'),
+(3,'Nequi'),
+(4,'Mercado Pago'),
+(5,'Payvalida'),
+(6,'Ahorro a la mano'),
+(7,'Paypal'),
+(8,'addi');
 /*!40000 ALTER TABLE `metodos_pago` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -489,8 +487,15 @@ CREATE TABLE `venta` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `fecha_venta` timestamp NULL DEFAULT current_timestamp(),
   `total` decimal(10,2) NOT NULL,
+  `cantidad` varchar(255) DEFAULT NULL,
+  `producto_id` int(11) NOT NULL,
+  `metodo_pago_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  CONSTRAINT `venta_metodos_pago_FK` FOREIGN KEY (`id`) REFERENCES `metodos_pago` (`id_metodo_pago`)
+  KEY `venta_metodos_pago_FK` (`metodo_pago_id`),
+  KEY `venta_producto_FK_1` (`producto_id`),
+  CONSTRAINT `venta_metodos_pago_FK` FOREIGN KEY (`metodo_pago_id`) REFERENCES `metodos_pago` (`id`),
+  CONSTRAINT `venta_producto_FK` FOREIGN KEY (`id`) REFERENCES `producto` (`id`),
+  CONSTRAINT `venta_producto_FK_1` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -516,4 +521,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-01 12:48:14
+-- Dump completed on 2025-03-03 18:52:27
