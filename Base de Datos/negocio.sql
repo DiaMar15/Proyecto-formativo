@@ -1,7 +1,7 @@
 /*!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19  Distrib 10.11.8-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: negocio
+-- Host: localhost    Database: negocio2
 -- ------------------------------------------------------
 -- Server version	10.11.8-MariaDB-0ubuntu0.24.04.1
 
@@ -42,6 +42,32 @@ LOCK TABLES `categoria` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `encabezado_factura_venta`
+--
+
+DROP TABLE IF EXISTS `encabezado_factura_venta`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `encabezado_factura_venta` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `numero_factura` bigint(20) NOT NULL,
+  `nit` bigint(20) NOT NULL,
+  `direccion_empresa` varchar(225) NOT NULL,
+  `nombre_empresa` varchar(225) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `encabezado_factura_venta`
+--
+
+LOCK TABLES `encabezado_factura_venta` WRITE;
+/*!40000 ALTER TABLE `encabezado_factura_venta` DISABLE KEYS */;
+/*!40000 ALTER TABLE `encabezado_factura_venta` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `factura_compra`
 --
 
@@ -50,6 +76,8 @@ DROP TABLE IF EXISTS `factura_compra`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `factura_compra` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `encabezado_factura_compra_id` int(11) DEFAULT NULL,
+  `proveedor_id` int(11) DEFAULT NULL,
   `producto_id` int(11) DEFAULT NULL,
   `cantidad` int(11) NOT NULL,
   `precio` decimal(10,2) NOT NULL,
@@ -70,33 +98,43 @@ LOCK TABLES `factura_compra` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `inventario`
+-- Table structure for table `factura_venta`
 --
 
-DROP TABLE IF EXISTS `inventario`;
+DROP TABLE IF EXISTS `factura_venta`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `inventario` (
+CREATE TABLE `factura_venta` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
+  `encabezado_factura_venta_id` int(11) DEFAULT NULL,
+  `fecha_factura` datetime DEFAULT NULL,
+  `cantidad` varchar(255) DEFAULT NULL,
   `producto_id` int(11) NOT NULL,
-  `cantidad` int(11) NOT NULL,
-  `peso` varchar(225) DEFAULT NULL,
-  `categoria_id` int(11) NOT NULL,
-  `proveedor_id` int(11) NOT NULL,
+  `descripcion` varchar(255) DEFAULT NULL,
+  `precio_unidad` bigint(20) NOT NULL,
+  `descuento` varchar(50) DEFAULT NULL,
+  `presentacion_id` int(11) DEFAULT NULL,
+  `iva` varchar(100) DEFAULT NULL,
+  `subtotal` bigint(20) NOT NULL,
+  `total` bigint(20) NOT NULL,
+  `metodo_pago_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `inventario_productos_FK` (`producto_id`),
-  KEY `inventario_categoria_FK` (`categoria_id`),
-  CONSTRAINT `inventario_categoria_FK` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  KEY `venta_producto_FK_1` (`producto_id`),
+  KEY `encabezado_factura_venta_FK` (`encabezado_factura_venta_id`),
+  KEY `factura_venta_metodos_pago_FK` (`metodo_pago_id`),
+  CONSTRAINT `encabezado_factura_venta_FK` FOREIGN KEY (`encabezado_factura_venta_id`) REFERENCES `encabezado_factura_venta` (`id`),
+  CONSTRAINT `factura_venta_metodos_pago_FK` FOREIGN KEY (`metodo_pago_id`) REFERENCES `metodos_pago` (`id`),
+  CONSTRAINT `venta_producto_FK_1` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `inventario`
+-- Dumping data for table `factura_venta`
 --
 
-LOCK TABLES `inventario` WRITE;
-/*!40000 ALTER TABLE `inventario` DISABLE KEYS */;
-/*!40000 ALTER TABLE `inventario` ENABLE KEYS */;
+LOCK TABLES `factura_venta` WRITE;
+/*!40000 ALTER TABLE `factura_venta` DISABLE KEYS */;
+/*!40000 ALTER TABLE `factura_venta` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -120,35 +158,6 @@ CREATE TABLE `item` (
 LOCK TABLES `item` WRITE;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `login`
---
-
-DROP TABLE IF EXISTS `login`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `correo` varchar(250) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `fecha_registro` timestamp NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `usuario` (`correo`),
-  CONSTRAINT `login_registro_login_FK` FOREIGN KEY (`id`) REFERENCES `registro_login` (`id`),
-  CONSTRAINT `login_rol_FK` FOREIGN KEY (`id`) REFERENCES `rol` (`id`),
-  CONSTRAINT `login_rol_FK_1` FOREIGN KEY (`id`) REFERENCES `rol` (`login_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `login`
---
-
-LOCK TABLES `login` WRITE;
-/*!40000 ALTER TABLE `login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `login` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -213,29 +222,56 @@ INSERT INTO `permiso` VALUES
 UNLOCK TABLES;
 
 --
--- Table structure for table `peso`
+-- Table structure for table `permiso_item`
 --
 
-DROP TABLE IF EXISTS `peso`;
+DROP TABLE IF EXISTS `permiso_item`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `peso` (
-  `id` int(11) NOT NULL,
-  `producto_id` int(11) NOT NULL,
-  `cantidad` varchar(255) NOT NULL,
+CREATE TABLE `permiso_item` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `permiso_id` int(11) NOT NULL,
+  `item_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `peso_producto_FK` (`producto_id`),
-  CONSTRAINT `peso_producto_FK` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`)
+  KEY `idx_permiso_item_id_permiso_FK` (`permiso_id`),
+  KEY `idx_permiso_item_id_item_FK` (`item_id`),
+  CONSTRAINT `idx_permiso_item_id_item_FK` FOREIGN KEY (`item_id`) REFERENCES `item` (`id`),
+  CONSTRAINT `idx_permiso_item_id_permiso_FK` FOREIGN KEY (`permiso_id`) REFERENCES `permiso` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `peso`
+-- Dumping data for table `permiso_item`
 --
 
-LOCK TABLES `peso` WRITE;
-/*!40000 ALTER TABLE `peso` DISABLE KEYS */;
-/*!40000 ALTER TABLE `peso` ENABLE KEYS */;
+LOCK TABLES `permiso_item` WRITE;
+/*!40000 ALTER TABLE `permiso_item` DISABLE KEYS */;
+/*!40000 ALTER TABLE `permiso_item` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `presentacion`
+--
+
+DROP TABLE IF EXISTS `presentacion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `presentacion` (
+  `id` int(11) NOT NULL,
+  `descripcion` varchar(255) NOT NULL,
+  `peso` varchar(205) NOT NULL,
+  `unidad_medida_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `presentacion`
+--
+
+LOCK TABLES `presentacion` WRITE;
+/*!40000 ALTER TABLE `presentacion` DISABLE KEYS */;
+/*!40000 ALTER TABLE `presentacion` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -259,7 +295,7 @@ CREATE TABLE `producto` (
   KEY `producto_peso_FK` (`peso_id`),
   CONSTRAINT `producto_categoria_FK` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`),
   CONSTRAINT `producto_inventario_FK` FOREIGN KEY (`inventario_id`) REFERENCES `inventario` (`id`),
-  CONSTRAINT `producto_peso_FK` FOREIGN KEY (`peso_id`) REFERENCES `peso` (`id`)
+  CONSTRAINT `producto_peso_FK` FOREIGN KEY (`peso_id`) REFERENCES `presentacion` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -331,64 +367,6 @@ CREATE TABLE `recepcion` (
 LOCK TABLES `recepcion` WRITE;
 /*!40000 ALTER TABLE `recepcion` DISABLE KEYS */;
 /*!40000 ALTER TABLE `recepcion` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `registro`
---
-
-DROP TABLE IF EXISTS `registro`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `registro` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre` varchar(255) NOT NULL,
-  `apellido` varchar(255) NOT NULL,
-  `fecha_nacimineto` date NOT NULL,
-  `tipo_documento_id` int(11) NOT NULL,
-  `numero_documento` bigint(20) NOT NULL,
-  `correo` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `registro_tipo_documento_FK` (`tipo_documento_id`),
-  CONSTRAINT `registro_tipo_documento_FK` FOREIGN KEY (`tipo_documento_id`) REFERENCES `tipo_documento` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `registro`
---
-
-LOCK TABLES `registro` WRITE;
-/*!40000 ALTER TABLE `registro` DISABLE KEYS */;
-/*!40000 ALTER TABLE `registro` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `registro_login`
---
-
-DROP TABLE IF EXISTS `registro_login`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `registro_login` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `registro_id` int(11) NOT NULL,
-  `login_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `registro_login_registro_login_FK` (`registro_id`),
-  KEY `registro_login_categoria_FK` (`login_id`),
-  CONSTRAINT `registro_login_registro_FK` FOREIGN KEY (`id`) REFERENCES `registro` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `registro_login`
---
-
-LOCK TABLES `registro_login` WRITE;
-/*!40000 ALTER TABLE `registro_login` DISABLE KEYS */;
-/*!40000 ALTER TABLE `registro_login` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -477,39 +455,90 @@ LOCK TABLES `tipo_documento` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `venta`
+-- Table structure for table `unidad_medida`
 --
 
-DROP TABLE IF EXISTS `venta`;
+DROP TABLE IF EXISTS `unidad_medida`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `venta` (
+CREATE TABLE `unidad_medida` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fecha_venta` timestamp NULL DEFAULT current_timestamp(),
-  `total` decimal(10,2) NOT NULL,
-  `cantidad` varchar(255) DEFAULT NULL,
-  `producto_id` int(11) NOT NULL,
-  `metodo_pago_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `venta_metodos_pago_FK` (`metodo_pago_id`),
-  KEY `venta_producto_FK_1` (`producto_id`),
-  CONSTRAINT `venta_metodos_pago_FK` FOREIGN KEY (`metodo_pago_id`) REFERENCES `metodos_pago` (`id`),
-  CONSTRAINT `venta_producto_FK` FOREIGN KEY (`id`) REFERENCES `producto` (`id`),
-  CONSTRAINT `venta_producto_FK_1` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+  `nombre` varchar(200) NOT NULL,
+  `abreviatura` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `venta`
+-- Dumping data for table `unidad_medida`
 --
 
-LOCK TABLES `venta` WRITE;
-/*!40000 ALTER TABLE `venta` DISABLE KEYS */;
-/*!40000 ALTER TABLE `venta` ENABLE KEYS */;
+LOCK TABLES `unidad_medida` WRITE;
+/*!40000 ALTER TABLE `unidad_medida` DISABLE KEYS */;
+/*!40000 ALTER TABLE `unidad_medida` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'negocio'
+-- Table structure for table `usuario`
+--
+
+DROP TABLE IF EXISTS `usuario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usuario` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(255) NOT NULL,
+  `apellido` varchar(255) NOT NULL,
+  `fecha_nacimineto` date NOT NULL,
+  `tipo_documento_id` int(11) NOT NULL,
+  `numero_documento` bigint(20) NOT NULL,
+  `correo` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `registro_tipo_documento_FK` (`tipo_documento_id`),
+  CONSTRAINT `registro_tipo_documento_FK` FOREIGN KEY (`tipo_documento_id`) REFERENCES `tipo_documento` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuario`
+--
+
+LOCK TABLES `usuario` WRITE;
+/*!40000 ALTER TABLE `usuario` DISABLE KEYS */;
+/*!40000 ALTER TABLE `usuario` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `usuario_rol`
+--
+
+DROP TABLE IF EXISTS `usuario_rol`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `usuario_rol` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `usuario_id` int(11) NOT NULL,
+  `rol_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `usuario_id` (`usuario_id`),
+  KEY `rol_id` (`rol_id`),
+  CONSTRAINT `usuario_rol_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuario` (`id`),
+  CONSTRAINT `usuario_rol_ibfk_2` FOREIGN KEY (`rol_id`) REFERENCES `rol` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `usuario_rol`
+--
+
+LOCK TABLES `usuario_rol` WRITE;
+/*!40000 ALTER TABLE `usuario_rol` DISABLE KEYS */;
+/*!40000 ALTER TABLE `usuario_rol` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Dumping routines for database 'negocio2'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -521,4 +550,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-03 18:52:27
+-- Dump completed on 2025-03-10 18:37:21
