@@ -1,7 +1,7 @@
 /*!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19  Distrib 10.11.8-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: negocio1
+-- Host: localhost    Database: negocio2
 -- ------------------------------------------------------
 -- Server version	10.11.8-MariaDB-0ubuntu0.24.04.1
 
@@ -612,7 +612,7 @@ LOCK TABLES `usuario_rol` WRITE;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'negocio1'
+-- Dumping routines for database 'negocio2'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
