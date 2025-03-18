@@ -1,7 +1,7 @@
 /*!999999\- enable the sandbox mode */ 
 -- MariaDB dump 10.19  Distrib 10.11.8-MariaDB, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: negocio2
+-- Host: localhost    Database: negocio1
 -- ------------------------------------------------------
 -- Server version	10.11.8-MariaDB-0ubuntu0.24.04.1
 
@@ -42,6 +42,32 @@ LOCK TABLES `categoria` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `encabezado_factura_compra`
+--
+
+DROP TABLE IF EXISTS `encabezado_factura_compra`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `encabezado_factura_compra` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `numero_factura` bigint(20) NOT NULL,
+  `nit` bigint(20) DEFAULT NULL,
+  `nombre_empresa` varchar(100) DEFAULT NULL,
+  `direccion_empresa` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `encabezado_factura_compra`
+--
+
+LOCK TABLES `encabezado_factura_compra` WRITE;
+/*!40000 ALTER TABLE `encabezado_factura_compra` DISABLE KEYS */;
+/*!40000 ALTER TABLE `encabezado_factura_compra` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `encabezado_factura_venta`
 --
 
@@ -68,6 +94,33 @@ LOCK TABLES `encabezado_factura_venta` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `entrada_salida_inventario`
+--
+
+DROP TABLE IF EXISTS `entrada_salida_inventario`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `entrada_salida_inventario` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `producto_id` int(11) NOT NULL,
+  `cantidad` bigint(20) DEFAULT NULL,
+  `peso` int(11) DEFAULT NULL,
+  `unidad_medida_id` int(11) DEFAULT NULL,
+  `flujo_operacion_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `entrada_salida_inventario`
+--
+
+LOCK TABLES `entrada_salida_inventario` WRITE;
+/*!40000 ALTER TABLE `entrada_salida_inventario` DISABLE KEYS */;
+/*!40000 ALTER TABLE `entrada_salida_inventario` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `factura_compra`
 --
 
@@ -84,6 +137,8 @@ CREATE TABLE `factura_compra` (
   `subtotal` decimal(10,2) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `factura_compra_producto` (`producto_id`),
+  KEY `factura_compra_encabezado_factura_compra_FK` (`encabezado_factura_compra_id`),
+  CONSTRAINT `factura_compra_encabezado_factura_compra_FK` FOREIGN KEY (`encabezado_factura_compra_id`) REFERENCES `encabezado_factura_compra` (`id`),
   CONSTRAINT `factura_compra_producto` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -138,6 +193,29 @@ LOCK TABLES `factura_venta` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `flujo_operacion`
+--
+
+DROP TABLE IF EXISTS `flujo_operacion`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `flujo_operacion` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nombre` varchar(250) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `flujo_operacion`
+--
+
+LOCK TABLES `flujo_operacion` WRITE;
+/*!40000 ALTER TABLE `flujo_operacion` DISABLE KEYS */;
+/*!40000 ALTER TABLE `flujo_operacion` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `item`
 --
 
@@ -171,7 +249,7 @@ CREATE TABLE `metodos_pago` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(150) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -188,7 +266,8 @@ INSERT INTO `metodos_pago` VALUES
 (5,'Payvalida'),
 (6,'Ahorro a la mano'),
 (7,'Paypal'),
-(8,'addi');
+(8,'addi'),
+(9,'Efectivo');
 /*!40000 ALTER TABLE `metodos_pago` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -261,7 +340,9 @@ CREATE TABLE `presentacion` (
   `descripcion` varchar(255) NOT NULL,
   `peso` varchar(205) NOT NULL,
   `unidad_medida_id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `presentacion_unidad_medida_FK` (`unidad_medida_id`),
+  CONSTRAINT `presentacion_unidad_medida_FK` FOREIGN KEY (`unidad_medida_id`) REFERENCES `unidad_medida` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -288,13 +369,10 @@ CREATE TABLE `producto` (
   `categoria_id` int(11) DEFAULT NULL,
   `cantidad` int(11) NOT NULL,
   `peso_id` int(11) DEFAULT NULL,
-  `inventario_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `producto_inventario` (`inventario_id`),
   KEY `producto_categoria_FK` (`categoria_id`),
   KEY `producto_peso_FK` (`peso_id`),
   CONSTRAINT `producto_categoria_FK` FOREIGN KEY (`categoria_id`) REFERENCES `categoria` (`id`),
-  CONSTRAINT `producto_inventario_FK` FOREIGN KEY (`inventario_id`) REFERENCES `inventario` (`id`),
   CONSTRAINT `producto_peso_FK` FOREIGN KEY (`peso_id`) REFERENCES `presentacion` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -335,38 +413,34 @@ LOCK TABLES `proveedor` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `recepcion`
+-- Table structure for table `recepcion_producto`
 --
 
-DROP TABLE IF EXISTS `recepcion`;
+DROP TABLE IF EXISTS `recepcion_producto`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `recepcion` (
+CREATE TABLE `recepcion_producto` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fecha` datetime NOT NULL,
   `producto_id` int(11) NOT NULL,
-  `cantidad` bigint(20) NOT NULL,
-  `peso` varchar(255) NOT NULL,
+  `cantidad` varchar(225) DEFAULT NULL,
+  `peso` int(11) DEFAULT NULL,
   `devolucion` varchar(255) NOT NULL,
   `proveedor_id` int(11) NOT NULL,
-  `inventario_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `recepcion_proveedor_FK` (`proveedor_id`),
   KEY `recepcion_producto_FK` (`producto_id`),
-  KEY `recepcion_inventario_FK` (`inventario_id`),
-  CONSTRAINT `recepcion_inventario_FK` FOREIGN KEY (`inventario_id`) REFERENCES `inventario` (`id`),
   CONSTRAINT `recepcion_producto_FK` FOREIGN KEY (`producto_id`) REFERENCES `producto` (`id`),
   CONSTRAINT `recepcion_proveedor_FK` FOREIGN KEY (`proveedor_id`) REFERENCES `proveedor` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `recepcion`
+-- Dumping data for table `recepcion_producto`
 --
 
-LOCK TABLES `recepcion` WRITE;
-/*!40000 ALTER TABLE `recepcion` DISABLE KEYS */;
-/*!40000 ALTER TABLE `recepcion` ENABLE KEYS */;
+LOCK TABLES `recepcion_producto` WRITE;
+/*!40000 ALTER TABLE `recepcion_producto` DISABLE KEYS */;
+/*!40000 ALTER TABLE `recepcion_producto` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -538,7 +612,7 @@ LOCK TABLES `usuario_rol` WRITE;
 UNLOCK TABLES;
 
 --
--- Dumping routines for database 'negocio2'
+-- Dumping routines for database 'negocio1'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -550,4 +624,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-03-10 18:37:21
+-- Dump completed on 2025-03-17 21:49:30
